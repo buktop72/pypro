@@ -1,1 +1,1 @@
-# print('init')
+from . import salary

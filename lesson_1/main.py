@@ -15,18 +15,18 @@ if __name__ == '__main__':
 4. Создать рядом с файлом main.py модуль dirty_main.py и импортировать все функции с помощью конструкции 
 (необязательное задание)
 """
+
 from datetime import date
 from application import salary as s
-from application import people as p
-
+from application.DB import people as p
 
 def main():
+    # print(dir(s),dir(p))
     print(date.today())
     s.calculate_salary()
     p.get_employees()
 
-
-
-
 if __name__ == '__main__':
     main()
+
+
