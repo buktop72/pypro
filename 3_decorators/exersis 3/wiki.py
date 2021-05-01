@@ -18,9 +18,6 @@ class wiki:
             out_file.close() 
         file.close()        
 
-if __name__ == '__main__':
-    main()
-    # wiki_country = wiki('countries.json')
 
 
 
