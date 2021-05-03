@@ -9,10 +9,8 @@ def hash (path: str):
             yield md5(line.encode()).hexdigest()
 
 if __name__ == '__main__':
-    main()
-    # hash_summ = hash('README.md')
-    # for i in hash_summ:
-    #     print(i)
+    pass
+    
 
 
 

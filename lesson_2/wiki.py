@@ -4,30 +4,30 @@
 """
 import json
 import requests
-class wiki:
+
+class Wiki:
     def __init__ (self, path: str):
-        self.path = path      
+        self.path = path
+        self.item = -1      
         file = open(self.path, encoding ='utf-8')        
-        data = json.load(file)
-        for i in data:
-            url = f'https://en.wikipedia.org/wiki/{i["name"]["common"]}' 
-            ls = url.split()
-            url = ('_').join(ls)           
-            out_file = open('out.txt', 'a', encoding = 'utf-8')
-            out_file.write(f'{i["name"]["common"]:45} - {url}\n')       
-            out_file.close() 
-        file.close()        
+        self.data = json.load(file)        
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.item += 1
+        if self.item >= len(self.data):  # условие выход из цикла
+            raise StopIteration  # выход из цикла             
+        return (self.data[self.item])  # в цикле for i in Wiki() self.data[self.item] подставится в i
+
 
 if __name__ == '__main__':
-    main()
-    # wiki_country = wiki('countries.json')
-
-
-
-
-
-
-
-
-
-
+    pass
+    
+    # for i in Wiki('countries.json'):        
+    #     url = f'https://en.wikipedia.org/wiki/{i["name"]["common"]}' 
+    #     ls = url.split()
+    #     url = ('_').join(ls)           
+    #     out_file = open('out.txt', 'a', encoding = 'utf-8')
+    #     out_file.write(f'{i["name"]["common"]:45} - {url}\n')       
+    #     out_file.close() 
