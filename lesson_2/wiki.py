@@ -23,11 +23,3 @@ class Wiki:
 
 if __name__ == '__main__':
     pass
-    
-    # for i in Wiki('countries.json'):        
-    #     url = f'https://en.wikipedia.org/wiki/{i["name"]["common"]}' 
-    #     ls = url.split()
-    #     url = ('_').join(ls)           
-    #     out_file = open('out.txt', 'a', encoding = 'utf-8')
-    #     out_file.write(f'{i["name"]["common"]:45} - {url}\n')       
-    #     out_file.close() 
