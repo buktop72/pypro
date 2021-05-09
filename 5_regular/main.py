@@ -14,42 +14,45 @@ import re
 from pprint import pprint
 import csv
 
-# читаем адресную книгу в формате CSV в список contacts_list
-with open("phonebook_raw.csv", encoding='utf-8') as f:
-  rows = csv.reader(f, delimiter=",")
-  contacts_list = list(rows)
+def read_book(path): # читаем адресную книгу в формате CSV в список contacts_list
+    with open(path, encoding='utf-8') as f:
+        rows = csv.reader(f, delimiter=",")
+        contacts_list = list(rows)
+    return contacts_list
 
 # TODO 1: выполните пункты 1-3 ДЗ
-phone_book = [] 
-title = contacts_list.pop(0)
-for i in contacts_list:
-    ls = []
-    # ФИО
-    pattern = r'(\b[А-Я]\w+)'
-    text = ' '.join(i)
-    x = re.findall(pattern, text)
-    if len(x) >= 3 :
-        ls.append(x[0])
-        ls.append(x[1])
-        ls.append(x[2])
-    else:
-        x.append(' ')
-        ls.append(x[0])
-        ls.append(x[1])
-        ls.append(x[2])    
-    item = i[3] # organization
-    ls.append(item)
-    item = i[4] # position 
-    ls.append(item)    
-    item = i[5] # phone   
-    pattern = "(\+7|8)+\s*\(?(\d{3})\)?(-*|\s*|.*)(\d{3})(-*|)(\d{2})-*(\d{2})"
-    phone = re.sub(pattern, r"+7(\2)\4-\6-\7", item)
-    pattern = "\(*(доб\.)\s(\d+)\)*"
-    phone = re.sub(pattern, r"\1\2", phone)    
-    ls.append(phone)    
-    item = i[6] # email
-    ls.append(item)
-    phone_book.append(ls)
+def edit_book(contacts_list): # причесываем адресную книгу
+    phone_book = []     
+    title = contacts_list.pop(0)
+    for i in contacts_list:
+        ls = []
+        # ФИО
+        pattern = r'(\b[А-Я]\w+)'
+        text = ' '.join(i)
+        x = re.findall(pattern, text)
+        if len(x) >= 3 :
+            ls.append(x[0])
+            ls.append(x[1])
+            ls.append(x[2])
+        else:
+            x.append(' ')
+            ls.append(x[0])
+            ls.append(x[1])
+            ls.append(x[2])    
+        item = i[3] # organization
+        ls.append(item)
+        item = i[4] # position 
+        ls.append(item)    
+        item = i[5] # phone   
+        pattern = "(\+7|8)+\s*\(?(\d{3})\)?(-*|\s*|.*)(\d{3})(-*|)(\d{2})-*(\d{2})"
+        phone = re.sub(pattern, r"+7(\2)\4-\6-\7", item)
+        pattern = "\(*(доб\.)\s(\d+)\)*"
+        phone = re.sub(pattern, r"\1\2", phone)    
+        ls.append(phone)    
+        item = i[6] # email
+        ls.append(item)
+        phone_book.append(ls)
+    return phone_book, title
 
 def duble_dict(ls): # ф-я принимает список, возвращает словарь с дублями: {'Мартиняхин': 2, 'Лагунцов': 2}
     d = {}
@@ -94,20 +97,29 @@ def del_double(dd, phone_book): # удаляем все строки упомя�
             if j in i:
                 phone_book.remove(i)
 
-
-dd = duble_dict(phone_book) # удаление дублей
-ls_new = list_united(dd, phone_book) # сложение списков
-del_double(dd, phone_book) # удаление дублей
-for i in ls_new:  # добавляем объединенные списки  
-    phone_book.append(i)
-phone_book.sort()
-
 # TODO 2: сохраните получившиеся данные в другой файл
-# код для записи файла в формате CSV
-phone_book.insert(0, title)
-# phone_book.sort()
-with open("phonebook.csv", "w", encoding='utf-8') as f:
-  datawriter = csv.writer(f, delimiter=',')  
-  datawriter.writerows(phone_book)
-# pprint(phone_book)
+def write_book(path, phone_book, title): # запись книги в файл
+    phone_book.insert(0, title)
+    with open("phonebook.csv", "w", encoding='utf-8') as f:
+        datawriter = csv.writer(f, delimiter=',')  
+        datawriter.writerows(phone_book)
+
+# чтение файла в contacts_list:
+path = "phonebook_raw.csv"
+contacts_list = read_book(path)
+# редактируем, получаем красивую книгу и отдельно титульник:
+phone_book, title = edit_book(contacts_list)
+# получаем дубли в виде словаря
+dd = duble_dict(phone_book) 
+# сложение повторяющихся списков
+ls_new = list_united(dd, phone_book) 
+# удаление дублей
+del_double(dd, phone_book) 
+# добавляем объединенные списки вместо повторяющихся неполных
+for i in ls_new:    
+    phone_book.append(i)
+# записываем новую книгу в файл:
+phone_book.sort()
+path = "phonebook.csv"
+write_book(path, phone_book, title)
 
