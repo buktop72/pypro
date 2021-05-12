@@ -16,8 +16,8 @@ import csv
 
 def read_book(path): # читаем адресную книгу в формате CSV в список contacts_list
     with open(path, encoding='utf-8') as f:
-        rows = csv.reader(f, delimiter=",")
-        contacts_list = list(rows)
+        rows = csv.reader(f, delimiter=",")           
+        contacts_list = list(rows)        
     return contacts_list
 
 # TODO 1: выполните пункты 1-3 ДЗ
@@ -27,30 +27,18 @@ def edit_book(contacts_list): # причесываем адресную книг
     for i in contacts_list:
         ls = []
         # ФИО
-        pattern = r'(\b[А-Я]\w+)'
-        text = ' '.join(i)
-        x = re.findall(pattern, text)
-        if len(x) >= 3 :
-            ls.append(x[0])
-            ls.append(x[1])
-            ls.append(x[2])
-        else:
-            x.append(' ')
-            ls.append(x[0])
-            ls.append(x[1])
-            ls.append(x[2])    
-        item = i[3] # organization
-        ls.append(item)
-        item = i[4] # position 
-        ls.append(item)    
-        item = i[5] # phone   
-        pattern = "(\+7|8)+\s*\(?(\d{3})\)?(-*|\s*|.*)(\d{3})(-*|)(\d{2})-*(\d{2})"
-        phone = re.sub(pattern, r"+7(\2)\4-\6-\7", item)
+        full_name = re.findall(r'(\b[А-Я]\w+)', ' '.join(i[:3]))
+        if len(full_name) < 3:
+            full_name.append('')
+        ls = ls + full_name
+        ls.append(i[3]) # organization
+        ls.append(i[4]) # position  
+        pattern = "(\+7|8)+\s*\(?(\d{3})\)?(-*|\s*|.*)(\d{3})(-*|)(\d{2})-*(\d{2})" # phone 
+        phone = re.sub(pattern, r"+7(\2)\4-\6-\7", i[5])
         pattern = "\(*(доб\.)\s(\d+)\)*"
         phone = re.sub(pattern, r"\1\2", phone)    
         ls.append(phone)    
-        item = i[6] # email
-        ls.append(item)
+        ls.append(i[6]) # email        
         phone_book.append(ls)
     return phone_book, title
 
@@ -88,14 +76,10 @@ def list_united(d, phone_book):# ф-я принимает словарь дуб�
     return ls_new
 
 def del_double(dd, phone_book): # удаляем все строки упомянутые в словаре дублей     
-    for i in phone_book:    
+    for i in phone_book:        
         for j in dd.keys():
             if j in i:
-                phone_book.remove(i)
-    for i in phone_book:    # еще один проход, с первого раза все удаляется ¯\_(ツ)_/¯
-        for j in dd.keys():
-            if j in i:
-                phone_book.remove(i)
+                i.clear()
 
 # TODO 2: сохраните получившиеся данные в другой файл
 def write_book(path, phone_book, title): # запись книги в файл
@@ -104,22 +88,23 @@ def write_book(path, phone_book, title): # запись книги в файл
         datawriter = csv.writer(f, delimiter=',')  
         datawriter.writerows(phone_book)
 
-# чтение файла в contacts_list:
-path = "phonebook_raw.csv"
-contacts_list = read_book(path)
-# редактируем, получаем красивую книгу и отдельно титульник:
-phone_book, title = edit_book(contacts_list)
-# получаем дубли в виде словаря
-dd = duble_dict(phone_book) 
-# сложение повторяющихся списков
-ls_new = list_united(dd, phone_book) 
-# удаление дублей
-del_double(dd, phone_book) 
-# добавляем объединенные списки вместо повторяющихся неполных
-for i in ls_new:    
-    phone_book.append(i)
-# записываем новую книгу в файл:
-phone_book.sort()
-path = "phonebook.csv"
-write_book(path, phone_book, title)
-
+if __name__ == '__main__':
+    # чтение файла в contacts_list:
+    path = "phonebook_raw.csv"
+    contacts_list = read_book(path)
+    # редактируем, получаем красивую книгу и отдельно титульник:
+    phone_book, title = edit_book(contacts_list)
+    # получаем дубли в виде словаря
+    dd = duble_dict(phone_book) 
+    # сложение повторяющихся списков
+    ls_new = list_united(dd, phone_book) 
+    # удаление дублей
+    del_double(dd, phone_book) 
+    # добавляем объединенные списки вместо повторяющихся неполных
+    for i in ls_new:    
+        phone_book.append(i)
+    # записываем новую книгу в файл:
+    phone_book.sort()
+    phone_book = list(filter(None, phone_book))
+    path = "phonebook.csv"
+    write_book(path, phone_book, title)
