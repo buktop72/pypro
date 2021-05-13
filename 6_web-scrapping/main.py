@@ -37,10 +37,10 @@ def scrap(keywords, url):
         text_set = text_set | tags_set | title_set # объединение всех множеств одного блока
         if disaire_hub & text_set:            
             href = article.find('h2', class_="post__title").find('a').attrs.get('href') 
-            print('Совпадение по тэгу ', str(disaire_hub & text_set)) 
-            print(article.find('span', class_="post__time").text)
-            print(title.text.strip())
-            print(href, '\n')   
+            print('Совпадение по тэгу ', str(disaire_hub & text_set)) # тэг
+            print(article.find('span', class_="post__time").text) # время
+            print(title.text.strip()) # заголовок
+            print(href, '\n')   # ссылка
 
 if __name__ == '__main__':
     KEYWORDS = ['дизайн', 'фото', 'web', 'python']
